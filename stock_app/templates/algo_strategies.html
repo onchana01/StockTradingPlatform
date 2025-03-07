@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="algo-strategies-container">
+    <div class="manage-algo-section">
+      <h1>Algorithmic Trading for {{ portfolio.name }}</h1>
+      <h2>Add New Strategy</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ algo_form.as_p }}
+        <button type="submit">Add Algo Strategy</button>
+      </form>
+    </div>
+
+    <div class="active-strategies-section">
+      <h2>Active Strategies</h2>
+      <ul>
+        {% for algo in algos %}
+          <li>{{ algo.name }}: {{ algo.action }} {{ algo.quantity }} {{ algo.stock.ticker }} if {{ algo.condition }} (Active: {{ algo.is_active }})</li>
+        {% empty %}
+          <li>No active strategies.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}

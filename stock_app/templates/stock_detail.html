@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="stock-detail-container">
+    <div class="manage-portfolio-section">
+      <h1>Manage Portfolio: {{ portfolio.name }}</h1>
+    </div>
+    
+    <div class="place-order-section">
+      <h2>Place New Order</h2>
+      <form method="post" name="order_form">
+        {% csrf_token %}
+        <input type="hidden" name="order_form" value="1">
+        {{ form.as_p }}
+        <button type="submit">Execute Order</button>
+      </form>
+    </div>
+
+    <div class="advanced-trading-section">
+      <h2>Advanced Trading Features</h2>
+      <h3>Algorithmic Trading</h3>
+      <form method="post" name="algo_form">
+        {% csrf_token %}
+        <input type="hidden" name="algo_form" value="1">
+        {{ algo_form.as_p }}
+        <button type="submit">Add Algo Strategy</button>
+      </form>
+      <h4>Active Strategies</h4>
+      <ul>
+        {% for algo in algos %}
+          <li>{{ algo.name }}: {{ algo.action }} {{ algo.quantity }} {{ algo.stock.ticker }} if {{ algo.condition }} (Active: {{ algo.is_active }})</li>
+        {% empty %}
+          <li>No active strategies.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="pending-orders-section">
+      <h2>Pending Orders</h2>
+      <ul>
+        {% for transaction in transactions %}
+          <li>
+            {{ transaction.type }} {{ transaction.order_type }} {{ transaction.quantity }} shares of {{ transaction.stock.ticker }}
+            {% if transaction.order_type != 'MARKET' %}
+              {% if transaction.order_type in 'CALL_OPTION PUT_OPTION' %}
+                (Strike: ${{ transaction.strike_price|floatformat:2 }}, Expires: {{ transaction.expiration_date }})
+              {% else %}
+                at ${{ transaction.limit_price|floatformat:2 }}
+              {% endif %}
+              - <a href="{% url 'modify_order' portfolio.id transaction.id %}">Modify</a>
+              - <a href="{% url 'cancel_order' portfolio.id transaction.id %}">Cancel</a>
+            {% endif %}
+            {% if transaction.margin_used > 0 %}
+              (Margin: ${{ transaction.margin_used|floatformat:2 }})
+            {% endif %}
+          </li>
+        {% empty %}
+          <li>No pending orders.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}

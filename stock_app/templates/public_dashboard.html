@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Platform - Market Overview</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/chart.min.js' %}"></script>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+    </nav>
+    <h1>Market Overview</h1>
+    <div>
+        {% for symbol, data in market_data.items %}
+            <div>
+                <h2>{{ symbol }}: ${{ data.price|floatformat:2 }}</h2>
+                {% if data.error %}
+                    <p>Error: {{ data.error }}</p>
+                {% else %}
+                    <p>Change: ${{ data.change|floatformat:2 }} ({{ data.change_percent|floatformat:2 }}%)</p>
+                    <canvas id="chart-{{ symbol }}" width="400" height="200"></canvas>
+                    <script>
+                        const ctx{{ symbol }} = document.getElementById('chart-{{ symbol }}').getContext('2d');
+                        new Chart(ctx{{ symbol }}, {
+                            type: 'line',
+                            data: {
+                                labels: ['-4', '-3', '-2', '-1', 'Today'],
+                                datasets: [{
+                                    label: '{{ symbol }} Price',
+                                    data: {{ data.history|safe }},
+                                    borderColor: 'blue',
+                                    fill: false
+                                }]
+                            },
+                            options: { scales: { y: { beginAtZero: false } } }
+                        });
+                    </script>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

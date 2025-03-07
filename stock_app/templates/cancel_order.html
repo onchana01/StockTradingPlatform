@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>Cancel Order for {{ transaction.stock.ticker }} in {{ transaction.portfolio.name }}</h1>
+  <p>Are you sure you want to cancel this {{ transaction.type }} {{ transaction.order_type }} order for {{ transaction.quantity }} shares?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Cancel</button>
+    <a href="{% url 'execute_order' transaction.portfolio.id %}">No, Go Back</a>
+  </form>
+{% endblock %}

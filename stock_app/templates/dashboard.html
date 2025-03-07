@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="dashboard-container">
+    <div class="welcome-section">
+      <h1>Welcome, {{ user.username }}</h1>
+    </div>
+    
+    <div class="performance-section">
+      <h2>Portfolio Performance</h2>
+      <p>Total Value: ${{ total_value|floatformat:2 }}</p>
+      <p>Total Cost: ${{ total_cost|floatformat:2 }}</p>
+      <p>Unrealized Gain/Loss: ${{ unrealized_gain_loss|floatformat:2 }}</p>
+      <p>Return: {{ return_percent|floatformat:2 }}%</p>
+    </div>
+
+    <div class="diversification-section">
+      <h2>Diversification</h2>
+      {% if diversification %}
+        <ul>
+          {% for sector, percent in diversification.items %}
+            <li>{{ sector }}: {{ percent|floatformat:2 }}%</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No diversification data available.</p>
+      {% endif %}
+    </div>
+
+    <div class="market-data-section">
+      <h2>Real-Time Market Data</h2>
+      {% for symbol, data in market_data.items %}
+        <div class="market-item">
+          <h3>{{ symbol }}: ${{ data.price|floatformat:2 }}</h3>
+          {% if data.error %}
+            <p>Error: {{ data.error }}</p>
+          {% else %}
+            <p>Change: ${{ data.change|floatformat:2 }} ({{ data.change_percent|floatformat:2 }}%)</p>
+            <canvas id="chart-market-{{ symbol }}" width="400" height="200"></canvas>
+            <script>
+              const ctxMarket{{ symbol }} = document.getElementById('chart-market-{{ symbol }}').getContext('2d');
+              new Chart(ctxMarket{{ symbol }}, {
+                type: 'line',
+                data: {
+                  labels: ['-4', '-3', '-2', '-1', 'Today'],
+                  datasets: [{
+                    label: '{{ symbol }} Price',
+                    data: {{ data.history|safe }},
+                    borderColor: 'blue',
+                    fill: false
+                  }]
+                },
+                options: { scales: { y: { beginAtZero: false } } }
+              });
+            </script>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="portfolio-stocks-section">
+      <h2>Your Portfolio Stocks</h2>
+      {% if stock_data %}
+        {% for ticker, data in stock_data.items %}
+          <div class="stock-item">
+            <h3>{{ ticker }}: ${{ data.price|floatformat:2 }}</h3>
+            {% if data.error %}
+              <p>Error: {{ data.error }}</p>
+            {% else %}
+              <p>Change: ${{ data.change|floatformat:2 }}</p>
+              <p>Owned: {{ data.quantity }} shares</p>
+              <canvas id="chart-{{ ticker }}" width="400" height="200"></canvas>
+              <script>
+                const ctx{{ ticker }} = document.getElementById('chart-{{ ticker }}').getContext('2d');
+                new Chart(ctx{{ ticker }}, {
+                  type: 'line',
+                  data: {
+                    labels: ['-4', '-3', '-2', '-1', 'Today'],
+                    datasets: [{
+                      label: '{{ ticker }} Price',
+                      data: {{ data.history|safe }},
+                      borderColor: 'green',
+                      fill: false
+                    }]
+                  },
+                  options: { scales: { y: { beginAtZero: false } } }
+                });
+              </script>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No stocks in your portfolios yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="create-portfolio-section">
+      <h2>Create a New Portfolio</h2>
+      <form method="post" enctype="multipart/form-data" action="{% url 'dashboard' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form.errors %}
+          <p style="color: red;">Please correct the errors below:</p>
+          {{ form.errors }}
+        {% endif %}
+        <button type="submit" id="create-portfolio-btn">Create Portfolio</button>
+      </form>
+    </div>
+
+    <div class="portfolios-section">
+      <h2>Your Portfolios</h2>
+      <ul>
+        {% for portfolio in portfolios %}
+          <li>
+            {% if portfolio.image %}
+              <img src="{{ portfolio.image.url }}" alt="{{ portfolio.name }}" style="max-width: 100px; max-height: 100px;">
+            {% endif %}
+            {{ portfolio.name }} - 
+            <a href="{% url 'execute_order' portfolio.id %}">Manage</a> - 
+            <a href="{% url 'edit_portfolio' portfolio.id %}">Edit</a> - 
+            <a href="{% url 'delete_portfolio' portfolio.id %}">Delete</a>
+          </li>
+        {% empty %}
+          <li>No portfolios yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}
