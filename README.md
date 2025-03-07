@@ -72,23 +72,7 @@ docker-compose run web python manage.py test stock_app
 
 Tests cover models, forms, and views, including advanced trading features.
 
-Project Structure
 
-StockPlatform/
-├── stock_app/              # Django app directory
-│   ├── static/            # CSS and JS files (e.g., styles.css)
-│   ├── templates/         # HTML templates with centered design
-│   ├── tests/             # Unit and integration tests
-│   ├── migrations/        # Database migrations
-│   ├── models.py          # Data models (Stock, Portfolio, etc.)
-│   ├── views.py           # Application logic
-│   └── urls.py            # URL routing
-├── StockPlatform/         # Django project settings
-├── Dockerfile             # Docker configuration for the app
-├── docker-compose.yml     # Multi-container setup with PostgreSQL
-├── requirements.txt       # Python dependencies
-├── media/                 # Uploaded files (e.g., portfolio images)
-└── README.md              # Project documentation
 
 Contributing
 Contributions are welcome! To contribute:
