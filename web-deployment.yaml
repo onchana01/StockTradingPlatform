@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stocktradingplatform-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stocktradingplatform-web
+  template:
+    metadata:
+      labels:
+        app: stocktradingplatform-web
+    spec:
+      containers:
+      - name: web
+        image: gcr.io/stockplatform/stocktradingplatform-web:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DEBUG
+          value: "True"
+        - name: ALPHA_VANTAGE_API_KEY
+          value: "W4AQWGNID2HL4KBJ"
+        - name: DB_NAME
+          value: "stockplatform"
+        - name: DB_USER
+          value: "stockuser"
+        - name: DB_PASSWORD
+          value: "stockpass"
+        - name: DB_HOST
+          value: "stocktradingplatform-db"
+        - name: DB_PORT
+          value: "5432"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10

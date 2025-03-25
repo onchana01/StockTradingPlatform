@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stocktradingplatform-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stocktradingplatform-db
+  template:
+    metadata:
+      labels:
+        app: stocktradingplatform-db
+    spec:
+      containers:
+      - name: db
+        image: postgres:15
+        env:
+        - name: POSTGRES_DB
+          value: "stockplatform"
+        - name: POSTGRES_USER
+          value: "stockuser"
+        - name: POSTGRES_PASSWORD
+          value: "stockpass"
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+          subPath: pgdata
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc

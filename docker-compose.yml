@@ -1,17 +1,13 @@
-version: '3.8'
-
 services:
   web:
     build: .
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
-      - ./media:/app/media  # Mount media directory
+      - ./media:/app/media
+      - ./.env:/app/.env
     ports:
       - "8000:8000"
-    environment:
-      - DEBUG=1
-      - ALPHA_VANTAGE_API_KEY=W4AQWGNID2HL4KBJ
     depends_on:
       - db
 

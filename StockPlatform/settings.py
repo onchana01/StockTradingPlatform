@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-cxb(+4la2mj9h-xba!h9axc67=m%38f5ee3s3w#v=c$2o(xvbk"
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
@@ -76,13 +76,14 @@ WSGI_APPLICATION = "StockPlatform.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'stockplatform',
-        'USER': 'stockuser',
-        'PASSWORD': 'stockpass',
-        'HOST': 'db',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'stockplatform'),
+        'USER': os.getenv('DB_USER', 'stockuser'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'stockpass'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
 
 
 # Password validation

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stockplatform-env
+data:
+  .env: |
+    SECRET_KEY=django-insecure-cxb(+4la2mj9h-xba!h9axc67=m%38f5ee3s3w#v=c$2o(xvbk
+    DEBUG=True
+    DB_NAME=stockplatform
+    DB_USER=stockuser
+    DB_PASSWORD=stockpass
+    DB_HOST=stocktradingplatform-db
+    DB_PORT=5432
+    ALPHA_VANTAGE_API_KEY=W4AQWGNID2HL4KBJ

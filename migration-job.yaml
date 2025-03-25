@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stocktradingplatform-migration
+spec:
+  template:
+    spec:
+      containers:
+      - name: migration
+        image: gcr.io/stockplatform/stocktradingplatform-web:latest
+        command: ["python", "manage.py", "migrate"]
+        env:
+        - name: DB_NAME
+          value: "stockplatform"
+        - name: DB_USER
+          value: "stockuser"
+        - name: DB_PASSWORD
+          value: "stockpass"
+        - name: DB_HOST
+          value: "stocktradingplatform-db"
+        - name: DB_PORT
+          value: "5432"
+      restartPolicy: OnFailure
